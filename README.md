@@ -21,3 +21,6 @@ To list all notes, call `midi.notes`
 
 midi.notes is a pandas dataframe, so you can modify midi.notes however you want with pandas tools and then call `dataframe_to_midi()` to save the result
 
+An example of `midi.notes` dataframe:
+![image](https://user-images.githubusercontent.com/30999506/116210545-a48caa80-a74b-11eb-8dcc-e81f9ac2a640.png)
+
