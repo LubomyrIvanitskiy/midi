@@ -53,8 +53,13 @@ class MidiFile:
         return audio_data, fs
 
     def piano_roll_data(self):
-        records = self.notes[self.notes.columns[:-1]].to_records(index=False)
-        result = list(records)
+        records = self.notes[self.notes.columns[:-1]]
+
+        result = []
+        for index, record in records.iterrows():
+            values = list(record.values)
+            values[3] = values[3] / 128
+            result.append(tuple(values))
         return result
 
     def show_piano_roll(self, figsize=(8, 3), velocity_alpha=True):
