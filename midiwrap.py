@@ -53,7 +53,7 @@ class MidiFile:
         return audio_data, fs
 
     def piano_roll_data(self):
-        records = self.notes.to_records(index=False)
+        records = self.notes[midi.notes.columns[:-1]].to_records(index=False)
         result = list(records)
         return result
 
