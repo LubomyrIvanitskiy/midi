@@ -30,6 +30,26 @@ def csv_to_midi(csv):
     return dataframe_to_midi(pd.read_csv(csv))
 
 
+class MelodyBuilder:
+
+    def __init__(self):
+        self.melody = pretty_midi.PrettyMIDI()
+        self.instruments = {}
+
+    def add_note(self, pitch, time, duration, instrument_name):
+        if instrument_name in self.instruments:
+            instrument = self.instruments[instrument_name]
+        else:
+            instrument = pretty_midi.Instrument(program=5, name=instrument_name)
+            self.instruments[instrument_name] = instrument
+            self.melody.instruments.append(instrument)
+        note = pretty_midi.Note(velocity=125, pitch=pitch, start=time, end=time + duration)
+        instrument.notes.append(note)
+
+    def write_to_file(self, output_file):
+        self.melody.write(output_file)
+
+
 class MidiFile:
 
     def __init__(self, file):
@@ -82,3 +102,10 @@ if __name__ == "__main__":
     for track_name in track_names:
         dataframe_to_midi(midi.notes[midi.notes.Name == track_name], f"data/out_fur_elise_{track_name.lower()}.mid")
     midi.to_csv("out_to_elise.csv")
+
+    melody = MelodyBuilder()
+    melody.add_note(pitch=72, time=0, duration=1, instrument_name='piano')
+    melody.add_note(pitch=75, time=1, duration=1, instrument_name='piano')
+    melody.add_note(pitch=76, time=2, duration=1, instrument_name='piano')
+    melody.add_note(pitch=78, time=3, duration=1, instrument_name='piano')
+    melody.write_to_file('crasy.mid')
