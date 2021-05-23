@@ -1,4 +1,5 @@
 import pretty_midi
+from pretty_midi import utilities
 import pandas as pd
 import libfmp.c1
 
@@ -37,10 +38,18 @@ class MelodyBuilder:
         self.instruments = {}
 
     def add_note(self, pitch, time, duration, instrument_name):
+        """
+
+        :param pitch: 0..127
+        :param time: float in sec
+        :param duration: float in sec
+        :param instrument_name: import instruments for constants
+        :return:
+        """
         if instrument_name in self.instruments:
             instrument = self.instruments[instrument_name]
         else:
-            instrument = pretty_midi.Instrument(program=5, name=instrument_name)
+            instrument = pretty_midi.Instrument(program=utilities.instrument_name_to_program(instrument_name), name=instrument_name)
             self.instruments[instrument_name] = instrument
             self.melody.instruments.append(instrument)
         note = pretty_midi.Note(velocity=125, pitch=pitch, start=time, end=time + duration)
