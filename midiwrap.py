@@ -58,6 +58,14 @@ class MelodyBuilder:
     def write_to_file(self, output_file):
         self.melody.write(output_file)
 
+    def show_piano_roll(self):
+        result = []
+        for instrument in self.instruments:
+            notes = self.instruments[instrument].notes
+            for note in notes:
+                result.append((note.start, note.end - note.start, note.pitch, note.velocity / 128, instrument))
+        libfmp.c1.visualize_piano_roll(result)
+
 
 class MidiFile:
 
