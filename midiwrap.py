@@ -2,6 +2,7 @@ import pretty_midi
 from pretty_midi import utilities
 import pandas as pd
 import libfmp.c1
+import instruments
 
 
 def dataframe_to_midi(df_notes, output_file=None):
@@ -31,6 +32,10 @@ def csv_to_midi(csv):
     return dataframe_to_midi(pd.read_csv(csv))
 
 
+def drum_to_pitch(drum_name: instruments.DrumType):
+    return utilities.drum_name_to_note_number(drum_name)
+
+
 class MelodyBuilder:
 
     def __init__(self):
@@ -49,7 +54,11 @@ class MelodyBuilder:
         if instrument_name in self.instruments:
             instrument = self.instruments[instrument_name]
         else:
-            instrument = pretty_midi.Instrument(program=utilities.instrument_name_to_program(instrument_name), name=instrument_name)
+            if instrument_name == instruments.Drums:
+                instrument = pretty_midi.Instrument(program=0, name=instrument_name, is_drum=True)
+            else:
+                instrument = pretty_midi.Instrument(program=utilities.instrument_name_to_program(instrument_name),
+                                                    name=instrument_name, is_drum=False)
             self.instruments[instrument_name] = instrument
             self.melody.instruments.append(instrument)
         note = pretty_midi.Note(velocity=125, pitch=pitch, start=time, end=time + duration)
@@ -84,6 +93,9 @@ class MidiFile:
         midi_list = sorted(midi_list, key=lambda x: (x[0], x[2]))
 
         self.notes = pd.DataFrame(midi_list, columns=['Start', 'Duration', 'Pitch', 'Velocity', 'Name', 'Program'])
+
+    def remove_duplicates(self):
+        self.notes
 
     def synthesize(self, fs=22050):
         audio_data = self._midi_data.synthesize(fs=fs)
@@ -121,8 +133,10 @@ if __name__ == "__main__":
     midi.to_csv("out_to_elise.csv")
 
     melody = MelodyBuilder()
-    melody.add_note(pitch=72, time=0, duration=1, instrument_name='piano')
-    melody.add_note(pitch=75, time=1, duration=1, instrument_name='piano')
-    melody.add_note(pitch=76, time=2, duration=1, instrument_name='piano')
-    melody.add_note(pitch=78, time=3, duration=1, instrument_name='piano')
+    instrument = instruments.AcousticGrandPiano
+    melody.add_note(pitch=72, time=0, duration=1, instrument_name=instrument)
+    melody.add_note(pitch=75, time=1, duration=1, instrument_name=instrument)
+    melody.add_note(pitch=76, time=2, duration=1, instrument_name=instrument)
+    melody.add_note(pitch=78, time=3, duration=1, instrument_name=instrument)
+    melody.add_note(pitch=drum_to_pitch(instruments.DrumType.SideStick), time=4, duration=1, instrument_name=instruments.Drums)
     melody.write_to_file('crasy.mid')

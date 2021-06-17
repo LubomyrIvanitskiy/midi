@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='midiwrapper',
-    version='0.4',
+    version='0.45',
     packages=[''],
     install_requires=[
         'pandas',
